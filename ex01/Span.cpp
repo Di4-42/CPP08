@@ -1,5 +1,7 @@
 #include "Span.hpp"
 
+// -----canonical form------
+
 Span::Span() : _maxSize(0)
 {
     std::cout << "Span default constructor called" << std::endl;    
@@ -30,6 +32,7 @@ Span::~Span()
 {
     std::cout << "Span destructor called" << std::endl;
 }
+//----fonction add----
 
 void    Span::addNumber(int number)
 {
@@ -50,6 +53,7 @@ void    Span::addNumber(std::vector<int>::const_iterator begin, std::vector<int>
     _numbers.insert(_numbers.end(), begin, end);
 }
 
+//------Span min - max---------
 unsigned int Span::shortestSpan() const
 {
     if (_numbers.size() < 2)
@@ -58,16 +62,19 @@ unsigned int Span::shortestSpan() const
     std::vector<int> tmp = _numbers;
     std::sort(tmp.begin(), tmp.end());  //plus petit au plus grand
 
-    unsigned int min = static_cast<unsigned int>(tmp[1]) - static_cast<unsigned int>(tmp[0]);   //3, 10, 42
+    unsigned int min = std::numeric_limits<unsigned int>::max();  //min commence à 4 294 967 295
 
-
-    for (size_t i = 2; i < tmp.size(); i++)
+    for (size_t i = 1; i < tmp.size(); i++)
     {
-        unsigned int diff = static_cast<unsigned int>(tmp[i]) - static_cast<unsigned int>(tmp[i - 1]);   //L’écart maximal vaut 4 294 967 295
-                                                                                                        //tient dans un unsigned int mais pas dans int
+         long diff = static_cast<long>(tmp[i]) - static_cast<long>(tmp[i - 1]);
 
-        if (diff < min)
-            min = diff;
+        if (diff > std::numeric_limits<unsigned int>::max())
+            throw std::runtime_error("Span too large");
+        
+        unsigned int gap = static_cast<unsigned int>(diff);
+
+        if (gap < min)
+            min = gap;
     }
     return min;
 }
@@ -80,9 +87,14 @@ unsigned int Span::longestSpan() const
     std::vector<int> tmp = _numbers;
     std::sort(tmp.begin(), tmp.end());
 
-    unsigned int min = static_cast<unsigned int>(tmp[0]);
-    unsigned int max = static_cast<unsigned int>(tmp[tmp.size() - 1]);
-    unsigned int diff = max - min;    //dernier − premier donne toujours le plus grand écart 
+    long min = static_cast<long>(tmp[0]);
+    long max = static_cast<long>(tmp[tmp.size() - 1]);
+    long diff = std::abs(max - min);    //dernier − premier donne toujours le plus grand écart 
 
-    return diff;
+    if (diff > std::numeric_limits<unsigned int>::max())
+            throw std::runtime_error("Span too large");
+
+    unsigned int gap = static_cast<unsigned int>(diff);
+
+    return gap;
 }
