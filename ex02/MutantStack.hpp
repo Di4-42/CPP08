@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stack>
+#include <list>
 #include <iostream>
 
 template <typename T>
